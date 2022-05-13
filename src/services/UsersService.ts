@@ -23,13 +23,13 @@ class UsersService {
     const user = await usersRepository.findOne({ where: { email } });
 
     if (!user) {
-      return { error: 'User not found' };
+      return { error: 'Usuário não encontrado' };
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      return { error: 'Invalid password' };
+      return { error: 'Senha inválida' };
     }
 
     dotenv.config();
@@ -45,12 +45,24 @@ class UsersService {
   }
 
   async create({ email, password, name }: ICreateUsers) {
+    if (!email) {
+      return { error: 'O campo e-mail é obrigatório' };
+    }
+
+    if (!password) {
+      return { error: 'O campo senha é obrigatória' };
+    }
+
+    if (!name) {
+      return { error: 'O campo nome é obrigatório' };
+    }
+
     const usersRepository = getCustomRepository(UsersRepository);
 
     const userExists = await usersRepository.findOne({ where: { email } });
 
     if (userExists) {
-      return { error: 'Email is already in use' };
+      return { error: 'E-mail já está em uso' };
     }
 
     const user = usersRepository.create({
